@@ -1,5 +1,3 @@
-# oldFiles/validatePatient.py
-
 from fhir.resources.patient import Patient
 import json
 
@@ -106,3 +104,4 @@ if __name__ == "__main__":
         print(f"ERROR: Falló la validación del paciente contra el modelo FHIR Patient. Detalles: {e}")
         print("\n--- JSON Original que intentó validar ---")
         print(patient_json)
+
