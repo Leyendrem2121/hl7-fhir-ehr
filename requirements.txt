@@ -6,3 +6,4 @@ sqlalchemy
 pydantic
 gunicorn
 dnspython # Mantengo esta, es necesaria para pymongo con URIs srv (MongoDB Atlas)
+pydantic[email]
