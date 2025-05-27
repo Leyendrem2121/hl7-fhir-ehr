@@ -7,6 +7,7 @@ from datetime import date, time, datetime
 from pymongo.results import InsertOneResult
 from pymongo.errors import PyMongoError
 from app.controlador.PatientCrud import PatientCrud  # ✅ ahora sí existe y se puede importar
+from pymongo import MongoClient, ServerApi
 
 # --- Definición de Modelos Pydantic ---
 
@@ -51,7 +52,11 @@ app.add_middleware(
 
 # --- Instancias y Configuración ---
 patient_crud = PatientCrud()
-appointments_collection = patient_crud.collection  # usamos la misma colección de MongoDB
+
+# Conectar y obtener la colección de citas (appointments)
+client = MongoClient("mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", server_api=ServerApi('1'))
+db = client["SamplePatientService"]
+appointments_collection = db["appointments"]  # ✅ colección correcta
 
 # --- Rutas (Endpoints) de la API ---
 
