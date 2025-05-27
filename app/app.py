@@ -53,7 +53,6 @@ app.add_middleware(
 # --- Instancias y Configuración ---
 patient_crud = PatientCrud()
 
-from pymongo import MongoClient, ServerApi
 # Conectar y obtener la colección de citas (appointments)
 client = MongoClient("mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", server_api=ServerApi('1'))
 db = client["SamplePatientService"]
