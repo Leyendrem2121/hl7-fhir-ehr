@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, status # Importar 'status' para códigos HTTP
+frfrom fastapi import FastAPI, HTTPException, Request, status # Importar 'status' para códigos HTTP
 from fastapi.responses import JSONResponse # Para respuestas JSON personalizadas
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn # Para ejecutar el servidor localmente
