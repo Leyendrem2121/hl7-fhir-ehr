@@ -20,7 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ...
+# Endpoint raíz para verificar que la API está funcionando
+@app.get("/")
+async def root():
+    return {"message": "API funcionando correctamente"}
 
 @app.get("/patients", response_model=list)
 async def get_all_patients():
