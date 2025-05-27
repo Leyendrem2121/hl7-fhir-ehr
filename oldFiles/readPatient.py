@@ -105,6 +105,7 @@ def display_patients(patient_list):
 # Ejemplo de uso
 if __name__ == "__main__":
     # La URI de conexión y el nombre de la base de datos se obtienen de 'connection.py'
+    uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     # a través de la función get_db().
     # Aquí, solo necesitamos especificar la colección.
     
