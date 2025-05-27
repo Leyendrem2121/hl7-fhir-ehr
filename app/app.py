@@ -68,8 +68,6 @@ async def create_appointment(appointment: AppointmentCreate):
         appointment_data["createdAt"] = datetime.utcnow()
         appointment_data["estadoCita"] = "Pendiente"
         
-print("Insertando en MongoDB:", appointment_data)
-
         result: InsertOneResult = appointments_collection.insert_one(appointment_data)
 
         return {
