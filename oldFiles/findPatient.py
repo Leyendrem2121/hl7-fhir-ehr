@@ -101,7 +101,7 @@ def display_patient(patient):
 
 if __name__ == "__main__":
     db = get_db()
-
+uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     if db is None:
         print("ERROR: No se pudo establecer la conexión a MongoDB. No se puede buscar pacientes.")
     else:
