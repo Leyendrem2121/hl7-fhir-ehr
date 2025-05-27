@@ -1,20 +1,15 @@
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
-def connect_to_mongodb():
+def get_db():
     uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     client = MongoClient(uri, server_api=ServerApi('1'))
+    db = client["SamplePatientService"]  # Devuelve la base de datos completa, no solo una colección
+    return db
 
-    # Nombre de la base de datos y colección ya puestos
-    db = client["SamplePatientService"]
-    collection = db["patients"]
-
-    return collection
-
-# Inserta un ejemplo de paciente
+# Solo para prueba local, puedes dejar o eliminar esta parte
 if __name__ == "__main__":
-    collection = connect_to_mongodb()
-
+    db = get_db()
     paciente = {
         "nombreCompleto": "Juan Pérez García",
         "tipoIdentificacion": "CC",
@@ -31,6 +26,5 @@ if __name__ == "__main__":
         "examenes": ["Hemograma Completo", "Glicemia en Ayunas"],
         "notasPaciente": "Ninguna observación."
     }
-
-    result = collection.insert_one(paciente)
+    result = db.patients.insert_one(paciente)  # Aquí usas la colección desde db
     print("Paciente guardado con ID:", result.inserted_id)
