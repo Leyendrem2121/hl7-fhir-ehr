@@ -7,7 +7,6 @@ import uvicorn # Para ejecutar el servidor localmente
 
 # Asegúrate de que los nombres de las funciones en PatientCrud.py coincidan con estos (ej. 'get_patient_by_id_fhir')
 
-# --- LA LÍNEA CORREGIDA ESTÁ AQUÍ ABAJO ---
 from app.controlador.PatientCrud import get_patient_by_id_fhir, write_patient, collection
 
 app = FastAPI()
@@ -16,6 +15,7 @@ app = FastAPI()
 
 # Permite que tu frontend (local o desplegado) pueda comunicarse con este backend.
 
+# --- LA LÍNEA CORREGIDA ESTÁ AQUÍ ABAJO ---
 origins =
 
 app.add_middleware(
@@ -106,7 +106,7 @@ async def get_all_patients():
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                             detail="Servicio no disponible: Conexión a la base de datos no establecida.")
     try:
-        patients =
+        patients = # Inicializa la lista aquí
         # collection es el objeto PyMongo Collection. Iteramos sobre todos los documentos.
         for patient in collection.find():
             # Asegurarse de que el _id de MongoDB sea un string para la respuesta JSON
