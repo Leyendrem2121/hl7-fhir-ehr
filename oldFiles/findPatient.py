@@ -92,7 +92,7 @@ def display_patient(patient):
 if __name__ == "__main__":
     # Cadena de conexión a MongoDB (¡Reemplaza con tu propia cadena de conexión si es diferente!)
     # Asegúrate de que las credenciales y el nombre de la base de datos sean correctos.
-    uri = "mongodb+srv://mardugo:Max2005@sampleinformationservic.t2yog.mongodb.net/?retryWrites=true&w=majority&appName=SampleInformationService"
+    uri = "mongodb+srv://mardugo:Max2005@sampleinformationservic.t2yog.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
     # Nombre de la base de datos y la colección donde se guardan los pacientes FHIR
     db_name = "SamplePatientService" # La base de datos donde PatientCrud guarda
