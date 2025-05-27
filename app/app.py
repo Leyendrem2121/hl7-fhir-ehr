@@ -11,9 +11,9 @@ from pymongo.results import InsertOneResult
 from pymongo.errors import PyMongoError # Para un manejo de errores más específico de PyMongo
 from bson import ObjectId # Necesario para trabajar con los _id de MongoDB
 
-# CAMBIO CLAVE: Importamos la CLASE PatientCrud y los modelos que usa (FHIRPatient, ValidationError)
-# No importamos funciones o variables directas de PatientCrud.
-from controlador.PatientCrud import PatientCrud, FHIRPatient, ValidationError 
+# CAMBIO CLAVE: La importación de PatientCrud ahora usa la ruta completa del paquete
+# Asume que 'controlador' está dentro de la carpeta 'app'
+from app.controlador.PatientCrud import PatientCrud, FHIRPatient, ValidationError 
 
 # --- Definición de Modelos Pydantic para la Validación de Datos ---
 
@@ -71,10 +71,7 @@ async def startup_db_client():
     db = get_db() # Obtiene la instancia de la base de datos
     if db is None:
         print("¡Advertencia! La conexión a MongoDB no pudo establecerse al inicio.")
-        # Aquí no inicializamos patient_crud para que los endpoints de paciente fallen si no hay DB
     else:
-        # CAMBIO CLAVE: Inicializamos la clase PatientCrud aquí
-        # PatientCrud internamente usará get_db() para obtener la conexión
         patient_crud = PatientCrud() 
         print("PatientCrud inicializado.")
         
