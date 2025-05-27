@@ -1,87 +1,54 @@
-from fastapi import FastAPI, Request, HTTPException, status
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, EmailStr
-from typing import List, Optional
-from datetime import date, time, datetime
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 from pymongo.results import InsertOneResult
 from pymongo.errors import PyMongoError
-from app.controlador.PatientCrud import PatientCrud  # ✅ ahora sí existe y se puede importar
+from datetime import datetime
 
-# --- Definición de Modelos Pydantic ---
+# Configuración conexión MongoDB para appointments
+MONGODB_URI = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
+appointments_collection = client["SamplePatientService"]["appointments"]
 
-class DatosPacienteLite(BaseModel):
-    nombreCompleto: str
-    numeroIdentificacion: str
-    correoElectronico: EmailStr
-    telefono: Optional[str] = None
-
-class AppointmentCreate(BaseModel):
-    idPacienteFHIR: str
-    tipoServicio: str
-    fechaCita: date
-    horaCita: time
-    examenesSolicitados: List[str] = Field(default_factory=list)
-    notasPaciente: Optional[str] = None
-
-# --- Configuración de la Aplicación FastAPI ---
-
-app = FastAPI(
-    title="Backend LIS - Agendamiento de Citas y Gestión de Pacientes",
-    description="API para gestionar el agendamiento de citas de laboratorio y los datos de pacientes en el sistema LIS.",
-    version="1.0.0",
-)
-
-origins = [
-    "http://127.0.0.1:5500",
-    "http://localhost:5500",
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
-    "https://hl7-fhir-ehr-brayan-9053.onrender.com",
-    "https://hl7-fhir-ehr-brayan-123456.onrender.com"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# --- Instancias y Configuración ---
-patient_crud = PatientCrud()
-appointments_collection = patient_crud.collection  # usamos la misma colección de MongoDB
-
-# --- Rutas (Endpoints) de la API ---
-
-@app.get("/")
-async def read_root():
-    return {"message": "Backend del Sistema LIS funcionando con FastAPI. ¡Hola!"}
-
-@app.post("/api/appointments", response_model=dict, status_code=status.HTTP_201_CREATED)
+@app.post("/api/appointments", response_model=dict, status_code=201)
 async def create_appointment(appointment: AppointmentCreate):
     try:
+        # Combina fecha y hora en un solo datetime
         fecha_hora_cita = datetime.combine(appointment.fechaCita, appointment.horaCita)
-        appointment_data = appointment.dict()
-        appointment_data["fechaCita"] = fecha_hora_cita
-        appointment_data["createdAt"] = datetime.utcnow()
-        appointment_data["estadoCita"] = "Pendiente"
         
-print("Insertando en MongoDB:", appointment_data)
+        # Prepara datos para guardar
+        appointment_data_for_db = appointment.dict()
+        appointment_data_for_db["fechaCita"] = fecha_hora_cita
+        appointment_data_for_db["createdAt"] = datetime.utcnow()
+        appointment_data_for_db["estadoCita"] = "Pendiente"
 
-        result: InsertOneResult = appointments_collection.insert_one(appointment_data)
+        # Campo opcional datosPacienteLite, si no viene en el request
+        if "datosPacienteLite" not in appointment_data_for_db:
+            appointment_data_for_db["datosPacienteLite"] = {
+                "nombreCompleto": "", 
+                "numeroIdentificacion": "",
+                "correoElectronico": "",
+                "telefono": ""
+            }
+        
+        # Debug: imprime datos a insertar
+        print("Insertando en MongoDB (appointments):", appointment_data_for_db)
+
+        # Inserta en la colección appointments
+        result: InsertOneResult = appointments_collection.insert_one(appointment_data_for_db)
 
         return {
             "message": "Cita creada exitosamente",
             "appointmentId": str(result.inserted_id),
-            "data": appointment_data
+            "data": appointment_data_for_db
         }
 
     except PyMongoError as e:
+        print(f"Error de PyMongo al crear la cita: {e}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
+        print(f"Error inesperado al crear la cita: {e}")
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+
 
 @app.get("/api/appointments")
 async def get_all_appointments():
