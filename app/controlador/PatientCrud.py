@@ -3,7 +3,7 @@
 # Importaciones necesarias
 
 from pymongo import MongoClient
-from pymongo.server\_api import ServerApi
+from pymongo.server_api import ServerApi
 from pymongo.errors import PyMongoError, ConnectionFailure
 from bson.objectid import ObjectId
 from fhir.resources.patient import Patient \# Asegúrate de tener 'fhir.resources' instalado
