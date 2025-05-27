@@ -1,13 +1,26 @@
-# oldFiles/readPatient.py
-
-from connection import get_db
-from pymongo.errors import PyMongoError
-from bson.objectid import ObjectId
 import json
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
+from bson import ObjectId # Required to convert ObjectId to string for display
+from pymongo.errors import PyMongoError # Import for specific MongoDB error handling
 
+# Importamos la función de conexión a la base de datos que ya tenemos en 'connection.py'
+# Esto asegura que usamos la misma lógica de conexión en todo el backend.
+from connection import get_db
+
+# Nota: La función 'connect_to_mongodb' que estaba en tu fragmento original
+# ya no es necesaria aquí si usamos 'get_db()' de 'connection.py'
+# para obtener la base de datos y luego acceder a la colección.
+# Sin embargo, si este script fuera a ser ejecutado de forma independiente
+# sin depender de 'connection.py', tu función original sería útil.
+# Para mantener la consistencia con el resto del backend, usaremos get_db().
+
+# Función para leer todos los pacientes de la colección
 def read_patients_from_mongodb(collection):
     """
     Lee todos los documentos de paciente de la colección de MongoDB.
+    Convierte los ObjectIds a strings para facilitar la visualización.
+    Maneja errores específicos de PyMongo.
     """
     try:
         patients_cursor = collection.find()
@@ -24,6 +37,7 @@ def read_patients_from_mongodb(collection):
         print(f"Error inesperado al leer desde MongoDB: {e}")
         return None
 
+# Función para mostrar los datos de los pacientes
 def display_patients(patient_list):
     """
     Muestra los datos formateados de una lista de pacientes a partir de recursos FHIR Patient.
@@ -33,10 +47,11 @@ def display_patients(patient_list):
         for i, patient in enumerate(patient_list):
             print(f"\n--- Paciente {i + 1} ---")
             print(f"  ID de MongoDB: {patient.get('_id', 'N/A')}")
-            print(f"  ID FHIR: {patient.get('id', 'N/A')}")
+            print(f"  ID FHIR: {patient.get('id', 'N/A')}") # ID FHIR si el recurso lo tiene
             
             names = patient.get('name', [])
             if names:
+                # Buscar el nombre oficial si existe, de lo contrario usar el primero
                 official_name = next((n for n in names if n.get('use') == 'official'), names[0] if names else {})
                 given_name = official_name.get('given', [''])[0] if official_name.get('given') else ''
                 family_name = official_name.get('family', '')
@@ -51,8 +66,10 @@ def display_patients(patient_list):
             identifiers = patient.get("identifier", [])
             if identifiers:
                 for identifier in identifiers:
+                    # Acceder de forma segura a los componentes del tipo de identificador FHIR
                     id_type_coding = identifier.get('type', {}).get('coding', [])
                     id_type_text = identifier.get('type', {}).get('text', 'N/A')
+                    # Asumiendo que el primer coding es el relevante para system/code
                     id_system = id_type_coding[0].get('system') if id_type_coding else 'N/A'
                     id_code = id_type_coding[0].get('code') if id_type_coding else 'N/A'
                     id_value = identifier.get('value')
@@ -81,16 +98,22 @@ def display_patients(patient_list):
                     print(f"    Línea(s): {', '.join(line)}")
                     print(f"    Ciudad: {city}, Estado: {state}, CP: {postal_code}, País: {country}")
             print("-" * 30)
+        print("--- Fin del Listado ---")
     else:
         print("No se encontraron pacientes en la base de datos.")
 
+# Ejemplo de uso
 if __name__ == "__main__":
-    db = get_db()
+    # La URI de conexión y el nombre de la base de datos se obtienen de 'connection.py'
+    # a través de la función get_db().
+    # Aquí, solo necesitamos especificar la colección.
+    
+    db = get_db() # Obtener el objeto de la base de datos
 
     if db is None:
         print("ERROR: No se pudo establecer la conexión a MongoDB. No se puede leer pacientes.")
     else:
-        collection = db["patients"]
+        collection = db["patients"] # Acceder a la colección 'patients'
         
         print("\nLeyendo todos los pacientes de la base de datos...")
         patients = read_patients_from_mongodb(collection)
