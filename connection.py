@@ -3,7 +3,7 @@ from pymongo.server_api import ServerApi
 from pymongo.errors import ConnectionFailure
 
 def get_db(db_name, collection_name):
-    uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    uri = "mongodb+srv://brayanruiz:<db_password>@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     try:
         client = MongoClient(uri, server_api=ServerApi('1'))
         # Probar la conexión (ping)
