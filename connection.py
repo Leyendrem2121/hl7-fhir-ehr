@@ -10,8 +10,8 @@ def connect_to_mongodb(db_name, collection_name):
         # Probar la conexión (ping)
         client.admin.command('ping')
         print("Conexión a MongoDB exitosa.")
-        db = client"SamplePatientService"
-        collection = db"patient"
+        db = client["SamplePatientService"]
+        collection = db["patient"]
         return collection
     except ConnectionFailure as e:
         print(f"Error de conexión a MongoDB: {e}")
