@@ -63,7 +63,7 @@ def save_patient_to_mongodb(patient_data_dict: dict, collection):
 # Ejemplo de uso (se ejecuta solo cuando el script es el principal)
 if __name__ == "__main__":
     # Cadena de conexión a MongoDB (se usa la URI interna de connection.py)
-    uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=SamplePatientService"
     # Ya no se pasa la URI directamente aquí, ya que connect_to_mongodb la tiene internamente.
     
     db_name = "SamplePatientService"
