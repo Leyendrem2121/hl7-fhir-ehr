@@ -60,6 +60,7 @@ def save_patient_to_mongodb(patient_data_dict: dict, collection):
 # Ejemplo de uso (se ejecuta solo cuando el script es el principal)
 if __name__ == "__main__":
     # La URI de conexión y el nombre de la base de datos se manejan en connection.py
+    uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     # Aquí, simplemente obtenemos la instancia de la base de datos.
     
     db = get_db() # Obtener el objeto de la base de datos
