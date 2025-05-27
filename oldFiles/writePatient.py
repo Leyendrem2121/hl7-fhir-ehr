@@ -1,11 +1,13 @@
+# oldFiles/writePatient.py
+
 # Importar la función de conexión desde tu archivo connection.py
 # Asumiendo que connection.py está en un nivel accesible para este script.
-from connection import get_db # CAMBIO CLAVE: Importamos get_db en lugar de connect_to_mongodb
+from connection import connect_to_mongodb
 from pymongo.errors import PyMongoError # Para un manejo de errores más específico de PyMongo
 from fhir.resources.patient import Patient # Para la validación del modelo FHIR Patient
 import json # Necesario para parsear el JSON de ejemplo y para imprimir legiblemente
 
-# --- La función original 'connect_to_mongodb' no es necesaria aquí ---
+# --- La función original 'connect_to_mongodb' se elimina de aquí ---
 # --- porque ahora la importamos desde connection.py ---
 
 # Función para guardar el diccionario del paciente en MongoDB
@@ -52,30 +54,35 @@ def save_patient_to_mongodb(patient_data_dict: dict, collection):
             return None
     except PyMongoError as e:
         print(f"Error de PyMongo al insertar paciente: {e}")
+        return None
     except Exception as e:
         print(f"Error inesperado al insertar paciente: {e}")
-    return None
+        return None
 
 
 # Ejemplo de uso (se ejecuta solo cuando el script es el principal)
 if __name__ == "__main__":
-    # La URI de conexión y el nombre de la base de datos se manejan en connection.py
+    # Cadena de conexión a MongoDB (se usa la URI interna de connection.py)
     uri = "mongodb+srv://brayanruiz:Max2005@cluster0.xevyoo8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-    # Aquí, simplemente obtenemos la instancia de la base de datos.
+    # Ya no se pasa la URI directamente aquí, ya que connect_to_mongodb la tiene internamente.
     
-    db = get_db() # Obtener el objeto de la base de datos
+    db_name = "SamplePatientService"
+    collection_name = "patients"
 
-    if db is None:
+    # Conectar a MongoDB usando la función de connection.py
+    # La función connect_to_mongodb ahora retorna None si hay un error.
+    collection = connect_to_mongodb(db_name, collection_name)
+    
+    if collection is None:
         print("ERROR: No se pudo establecer la conexión a MongoDB. No se puede guardar el paciente.")
     else:
-        # Accedemos directamente a la colección 'patients' del objeto 'db'
-        collection = db["patients"] # Asegúrate de que esta sea la colección correcta
-        
         # JSON string correspondiente al artefacto Patient de HL7 FHIR.
+        # IMPORTANTE: La estructura del 'identifier' se ha actualizado para coincidir
+        # con el formato que tu frontend (app.js) genera y tu backend (PatientCrud.py) espera.
         patient_json_example = '''
         {
           "resourceType": "Patient",
-          "id": "PacienteEjemploWriteOld_001", 
+          "id": "PacienteEjemploWriteOld",
           "identifier": [
             {
               "use": "official",
